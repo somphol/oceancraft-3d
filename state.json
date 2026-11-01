@@ -1,0 +1,194 @@
+{
+  "project": "oceancraft-3d",
+  "title": "OCEANCRAFT 3D \u2014 Deep Sea Fishing & Hydrodynamics Studio",
+  "description": "A complete, production-ready, 100% client-side 3D fishing game and hydrodynamics playground built with vanilla HTML5, CSS3, ES6 and Three.js r128. Dynamic wave field, sampled boat buoyancy, cast-and-reel tension minigame, 18-species aquarium logbook, gear upgrades, Web Audio soundscape, localStorage autosave and JSON save transfer.",
+  "build": {
+    "startedAt": "2026-11-01T05:45:11Z",
+    "completedAt": "2026-11-01T06:38:31Z",
+    "durationSeconds": 3200,
+    "durationHuman": "53m 20s",
+    "timezone": "UTC",
+    "note": "Start is the OpenCode session creation time; completion is the build-state snapshot. The final state commit, GitHub push and Pages verification happen immediately after this snapshot."
+  },
+  "tokens": {
+    "input": 404520,
+    "output": 140029,
+    "reasoning": 145206,
+    "cacheRead": 58931456,
+    "cacheWrite": 1178,
+    "total": 689755,
+    "totalWithCache": 59622389,
+    "note": "Snapshot from the OpenCode session record at packaging time. total = input + output + reasoning. Cache reads/writes are context-usage figures listed separately. Final commit/push verification happens after this snapshot, so live session totals are marginally higher."
+  },
+  "cost": {
+    "usd": 0.0,
+    "note": "As reported by the OpenCode session record."
+  },
+  "sessionId": "ses_e6a5c0fe4ffezOp3UOe393igmV",
+  "model": {
+    "name": "DeepSeek V4.1 Flash",
+    "providerID": "opencode-go",
+    "modelID": "deepseek-v4.1-flash"
+  },
+  "harness": {
+    "name": "OpenCode",
+    "version": "2.2.5"
+  },
+  "repository": "https://github.com/somphol/oceancraft-3d",
+  "pages": "https://somphol.github.io/oceancraft-3d/",
+  "game": {
+    "engine": "Three.js r128 + OrbitControls",
+    "ocean": "380 x 380 displaced PlaneGeometry (up to 112 x 112 segments), five-component sine/cosine wave field, procedural normal map, vertex colouring, foam and sun glints",
+    "physics": "four-point hull sampling -> damped vertical buoyancy, bow pitch and side roll",
+    "species": 18,
+    "rarities": {
+      "common": 8,
+      "rare": 6,
+      "legendary": 4
+    },
+    "weatherPresets": [
+      "Calm Sunset",
+      "Stormy Waves",
+      "Bioluminescent Night"
+    ],
+    "upgrades": 5,
+    "achievements": 12,
+    "catchRecords": "weight (kg), length (cm), rarity, weather, reward and timestamp; per-species bests plus heaviest/longest/rarest",
+    "save": "localStorage autosave + validated oceancraft_save.json export/import",
+    "audio": "Web Audio API only: brown-noise ocean bed, reel clicks, splashes, bite, surge, snap, escape, thunder and catch chimes",
+    "visuals": "procedural boat, lighthouse island, buoys, birds, clouds, sun/moon, 1,200 stars, bioluminescent plankton, rain and lightning",
+    "responsive": "desktop, tablet and 390 x 844 mobile layouts",
+    "controls": [
+      "hold Cast / Space / C to charge; release to cast",
+      "hold Reel / R / Space during a fight",
+      "drag / scroll to orbit and zoom",
+      "L logbook, M mute, ? help, Esc close"
+    ]
+  },
+  "files": {
+    "index.html": {
+      "bytes": 18056,
+      "lines": 314
+    },
+    "style.css": {
+      "bytes": 49613,
+      "lines": 746
+    },
+    "script.js": {
+      "bytes": 163311,
+      "lines": 3602
+    },
+    "README.md": {
+      "bytes": 10830,
+      "lines": 207
+    },
+    "favicon.svg": {
+      "bytes": 1432,
+      "lines": 21
+    },
+    "screenshot.png": {
+      "bytes": 1169040
+    },
+    "screenshot-storm.png": {
+      "bytes": 1103434
+    },
+    "screenshot-night.png": {
+      "bytes": 989484
+    },
+    "screenshot-gameplay.png": {
+      "bytes": 1156845
+    },
+    "screenshot-logbook.png": {
+      "bytes": 485250
+    },
+    "screenshot-catch.png": {
+      "bytes": 316744
+    },
+    "screenshot-mobile.png": {
+      "bytes": 984132
+    },
+    "screenshot-mobile-logbook.png": {
+      "bytes": 487471
+    }
+  },
+  "verification": {
+    "selfTest": "18/18",
+    "browser": "Headless Chrome 156 (WebGL via SwiftShader) and live GitHub Pages check",
+    "checks": [
+      "species catalogue integrity, rarity counts and ranges",
+      "wave field finite and storm amplitude larger than calm",
+      "four-point buoyancy sampling",
+      "save normalization round-trip and malformed-save rejection",
+      "rarity rolls return valid species",
+      "catch recording updates collection, coins, XP and records",
+      "first-catch badge and achievement pipeline",
+      "upgrade purchase coins guard and safe-zone widening",
+      "surge/tension model and safe-zone progress advantage",
+      "all species SVG art generation",
+      "complete weather environment fields",
+      "JSON export payload shape",
+      "core DOM surfaces and formatting helpers",
+      "zero uncaught runtime errors",
+      "cast charge -> release -> flight -> splash -> wait",
+      "bite -> reel -> catch reveal -> logbook update",
+      "line snap and slack escape auto-reset",
+      "JSON download and real File import",
+      "mute persistence across reload",
+      "mobile 390 x 844 HUD and logbook layouts",
+      "live GitHub Pages 200 with 18/18 self-tests"
+    ],
+    "performance": {
+      "viewport": "1600 x 1000",
+      "drawCalls": 88,
+      "triangles": 30396,
+      "points": 2500,
+      "note": "Observed in the headless software-WebGL test environment. Mobile lowers the ocean segment count and pixel ratio."
+    },
+    "screenshots": [
+      "screenshot.png",
+      "screenshot-storm.png",
+      "screenshot-night.png",
+      "screenshot-gameplay.png",
+      "screenshot-logbook.png",
+      "screenshot-catch.png",
+      "screenshot-mobile.png",
+      "screenshot-mobile-logbook.png"
+    ]
+  },
+  "credits": [
+    {
+      "role": "Built with",
+      "name": "OpenCode",
+      "version": "2.2.5",
+      "url": "https://opencode.ai"
+    },
+    {
+      "role": "Model",
+      "name": "DeepSeek V4.1 Flash",
+      "id": "opencode-go/deepseek-v4.1-flash"
+    },
+    {
+      "role": "3D engine",
+      "name": "Three.js",
+      "version": "r128",
+      "license": "MIT",
+      "url": "https://threejs.org/"
+    },
+    {
+      "role": "Camera controls",
+      "name": "OrbitControls",
+      "version": "Three.js r128 examples",
+      "license": "MIT"
+    },
+    {
+      "role": "Typography",
+      "name": "Cormorant Garamond / Manrope / IBM Plex Mono",
+      "license": "SIL OFL 1.1",
+      "url": "https://fonts.google.com/"
+    }
+  ],
+  "notes": [
+    "No image, texture, 3D model or audio assets are used; boat, lighthouse, fish, particles, sky and soundscape are generated at runtime.",
+    "The project directory follows the OceanCraft brief in this session. The existing cyberdoom-retro-fps project is a separate build."
+  ]
+}
