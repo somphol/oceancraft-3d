@@ -3,3 +3,7 @@
 node_modules/
 __pycache__/
 shot-*.png
+
+Thumbs.db
+_site/
+.env
