@@ -747,7 +747,11 @@
     readWave: $("#read-wave"), readWind: $("#read-wind"), readTemp: $("#read-temp"), readBite: $("#read-bite"),
     sonar: $("#sonar"), sonarNote: $("#sonar-note"),
     xpFill: $("#xp-fill"), levelLabel: $("#level-label"), coinCount: $("#coin-count"),
-    rigState: $("#rig-state"), biteBanner: $("#bite-banner"),
+    rigPanel: $("#rig-panel"), rigState: $("#rig-state"), biteBanner: $("#bite-banner"),
+    btnRigToggle: $("#btn-rig-toggle"),
+    viewControls: $("#view-controls"),
+    viewZoomIn: $("#view-zoom-in"), viewZoomOut: $("#view-zoom-out"),
+    viewMove: $("#view-move"), viewRecenter: $("#view-recenter"),
     tensionTrack: $("#tension-track"), tensionZone: $("#tension-zone"), tensionFill: $("#tension-fill"),
     tensionNeedle: $("#tension-needle"), tensionReadout: $("#tension-readout"),
     progressFill: $("#progress-fill"), progressReadout: $("#progress-readout"),
@@ -812,6 +816,7 @@
     particles: null, gold: null, ripples: [],
     waveTime: 0, elapsed: 0, flash: 0, lightningTimer: 8,
     env: null, envTarget: null, weatherKey: "calm",
+    moveMode: false, viewTween: null,
     lastFrame: 0, fps: 60, frameCount: 0, quality: "high"
   };
 
@@ -844,17 +849,25 @@
     const Orbit = THREE.OrbitControls || window.OrbitControls;
     if (Orbit) {
       RT.controls = new Orbit(RT.camera, UI.canvas);
-      RT.controls.target.set(0, isMobile() ? 1.85 : 2.0, 0);
+      RT.controls.target.set(0, isMobile() ? 0.95 : 2.0, 0);
       RT.controls.enableDamping = true;
       RT.controls.dampingFactor = 0.055;
-      RT.controls.enablePan = false;
-      RT.controls.minDistance = isMobile() ? 14 : 9;
-      RT.controls.maxDistance = isMobile() ? 42 : 30;
+      RT.controls.enablePan = isMobile();
+      RT.controls.screenSpacePanning = true;
+      RT.controls.panSpeed = 0.8;
+      RT.controls.minDistance = isMobile() ? 10 : 9;
+      RT.controls.maxDistance = isMobile() ? 48 : 30;
       RT.controls.minPolarAngle = 0.58;
       RT.controls.maxPolarAngle = 1.46;
       RT.controls.rotateSpeed = 0.55;
       RT.controls.zoomSpeed = 0.6;
+      if (isMobile() && THREE.TOUCH) {
+        RT.controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+      }
       RT.controls.update();
+      if (RT.controls.addEventListener) {
+        RT.controls.addEventListener("start", () => { RT.viewTween = null; });
+      }
     } else {
       RT.controls = makeFallbackOrbit(RT.camera, UI.canvas, new THREE.Vector3(0, 1.3, 0));
     }
@@ -913,12 +926,122 @@
     return { update: () => {}, target };
   }
 
+  function configureOrbitViewport() {
+    if (!RT.controls) return;
+    const mobile = isMobile();
+    RT.controls.enablePan = mobile;
+    RT.controls.screenSpacePanning = true;
+    RT.controls.panSpeed = 0.8;
+    RT.controls.minDistance = mobile ? 10 : 9;
+    RT.controls.maxDistance = mobile ? 48 : 30;
+    if (THREE.TOUCH) {
+      if (mobile) {
+        RT.controls.touches = {
+          ONE: RT.moveMode ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.DOLLY_PAN
+        };
+      } else {
+        RT.controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+      }
+    }
+  }
+
+  function clampViewTarget() {
+    if (!RT.controls || !RT.boat) return;
+    const t = RT.controls.target;
+    const b = RT.boat.position;
+    const mobile = isMobile();
+    const nx = clamp(t.x, b.x - (mobile ? 10 : 5), b.x + (mobile ? 10 : 5));
+    const ny = clamp(t.y, mobile ? -1.5 : 0.6, mobile ? 6 : 4);
+    const nz = clamp(t.z, b.z - (mobile ? 10 : 5), b.z + (mobile ? 10 : 5));
+    if (nx !== t.x || ny !== t.y || nz !== t.z) {
+      const dx = nx - t.x, dy = ny - t.y, dz = nz - t.z;
+      t.set(nx, ny, nz);
+      RT.camera.position.x += dx;
+      RT.camera.position.y += dy;
+      RT.camera.position.z += dz;
+    }
+  }
+
+  function zoomView(factor) {
+    if (!RT.controls) return;
+    RT.viewTween = null;
+    const offset = RT.camera.position.clone().sub(RT.controls.target);
+    const distance = clamp(offset.length() * factor, RT.controls.minDistance, RT.controls.maxDistance);
+    offset.setLength(distance);
+    RT.camera.position.copy(RT.controls.target).add(offset);
+    RT.controls.update();
+    clampViewTarget();
+    if (UI.viewControls) {
+      UI.viewControls.classList.add("is-bumped");
+      setTimeout(() => UI.viewControls && UI.viewControls.classList.remove("is-bumped"), 160);
+    }
+  }
+
+  function resetView(instant) {
+    if (!RT.camera || !RT.controls) return;
+    const mobile = isMobile();
+    const target = new THREE.Vector3(
+      RT.boat ? RT.boat.position.x : 0,
+      mobile ? 0.95 : 2.0,
+      RT.boat ? RT.boat.position.z : 0
+    );
+    const position = mobile
+      ? new THREE.Vector3(target.x + 14, 8.2, target.z + 22)
+      : new THREE.Vector3(10.5, 6.2, 15.5);
+    if (instant || !RT.ready) {
+      RT.camera.position.copy(position);
+      RT.controls.target.copy(target);
+      RT.controls.update();
+      return;
+    }
+    RT.viewTween = {
+      elapsed: 0, duration: 0.42,
+      fromPos: RT.camera.position.clone(), toPos: position,
+      fromTarget: RT.controls.target.clone(), toTarget: target
+    };
+  }
+
+  function setMoveMode(on) {
+    RT.moveMode = !!on;
+    if (RT.controls && THREE.TOUCH) {
+      RT.controls.touches = {
+        ONE: RT.moveMode ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE,
+        TWO: THREE.TOUCH.DOLLY_PAN
+      };
+    }
+    if (UI.viewMove) {
+      UI.viewMove.classList.toggle("is-active", RT.moveMode);
+      UI.viewMove.setAttribute("aria-pressed", String(RT.moveMode));
+      UI.viewMove.title = RT.moveMode ? "Orbit mode: drag to rotate the scene" : "Move mode: drag to reposition the scene";
+      UI.viewMove.setAttribute("aria-label", RT.moveMode ? "Switch to orbit mode" : "Switch to move mode");
+    }
+    applyStateUI();
+  }
+
+  function setRigCollapsed(collapsed) {
+    if (!UI.rigPanel) return;
+    UI.rigPanel.classList.toggle("is-collapsed", !!collapsed);
+    if (UI.btnRigToggle) {
+      UI.btnRigToggle.setAttribute("aria-expanded", String(!collapsed));
+      UI.btnRigToggle.setAttribute("aria-label", collapsed ? "Expand fishing panel" : "Collapse fishing panel");
+      UI.btnRigToggle.title = collapsed ? "Expand fishing panel" : "Collapse fishing panel";
+    }
+  }
+
+  function toggleRigPanel() {
+    if (!UI.rigPanel) return;
+    setRigCollapsed(!UI.rigPanel.classList.contains("is-collapsed"));
+    audio.ui();
+  }
+
   function onResize() {
     if (!RT.renderer || !RT.camera) return;
     const w = window.innerWidth, h = window.innerHeight;
     RT.camera.aspect = w / h;
     RT.camera.fov = isMobile() ? 52 : 47;
     RT.camera.updateProjectionMatrix();
+    configureOrbitViewport();
     RT.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile() ? 1.65 : 2));
     RT.renderer.setSize(w, h, false);
     if (RT.ocean) {
@@ -2156,10 +2279,14 @@
     if (UI.controlHint) {
       const mobile = isMobile();
       const hints = {
-        idle: mobile ? "Hold <b>Cast</b> to charge, release to cast. Drag the scene to orbit." : "Hold <kbd>Space</kbd> to charge, release to cast. Drag the scene to orbit.",
+        idle: mobile
+          ? "Hold <b>Cast</b> to charge. Pinch to zoom · drag to " + (RT.moveMode ? "pan" : "orbit") + " · move pad switches."
+          : "Hold <kbd>Space</kbd> to charge, release to cast. Drag the scene to orbit.",
         charging: "Release to send the bobber — farther casts reach deeper water.",
         casting: "Line in flight. Watch for the splash…",
-        waiting: "Watch the bobber. You can recast at any time.",
+        waiting: mobile
+          ? "Watch the bobber. Pinch/2-finger drag or use the view pad to reframe."
+          : "Watch the bobber. You can recast at any time.",
         bite: mobile ? "Fish on! Hold the <b>Reel</b> button now!" : "Fish on! Hold <kbd>Reel</kbd> or <kbd>Space</kbd> now!",
         reeling: "Keep the needle in the green. Ease off when a surge hits.",
         landed: "Fine catch. The logbook has been updated.",
@@ -2303,6 +2430,9 @@
       RT.fishMat.emissiveIntensity = sp.rarity === "legendary" ? 0.9 : 0.45;
       const sizeK = 0.62 + clamp(specimen.kg / sp.maxKg, 0, 1) * 0.6 + (sp.rarity === "legendary" ? 0.32 : 0);
       RT.fish.scale.setScalar(sizeK);
+    }
+    if (isMobile() && UI.rigPanel && UI.rigPanel.classList.contains("is-collapsed")) {
+      setRigCollapsed(false);
     }
     const p = game.bobberPos;
     RT.particles.burst(p, 34, 0xc8f8ff, 4.2, 6, 1.2, 9.8);
@@ -3130,6 +3260,13 @@
     const logbookBtns = [$("#btn-logbook")];
     logbookBtns.forEach((b) => b && b.addEventListener("click", toggleLogbook));
 
+    // Mobile scene camera controls
+    if (UI.btnRigToggle) UI.btnRigToggle.addEventListener("click", toggleRigPanel);
+    if (UI.viewZoomIn) UI.viewZoomIn.addEventListener("click", () => { audio.ensure(); zoomView(0.8); });
+    if (UI.viewZoomOut) UI.viewZoomOut.addEventListener("click", () => { audio.ensure(); zoomView(1.25); });
+    if (UI.viewRecenter) UI.viewRecenter.addEventListener("click", () => { audio.ensure(); resetView(false); audio.ui(); });
+    if (UI.viewMove) UI.viewMove.addEventListener("click", () => { audio.ensure(); setMoveMode(!RT.moveMode); audio.ui(); });
+
     // Cast and reel pointer controls
     if (UI.btnCast) {
       UI.btnCast.addEventListener("pointerdown", (e) => {
@@ -3307,9 +3444,18 @@
     if (RT.particles) RT.particles.update(dt);
     if (RT.gold) RT.gold.update(dt);
 
-    if (RT.controls && RT.boat) {
-      RT.controls.target.y = damp(RT.controls.target.y, RT.boat.position.y + 1.65, 1.8, dt);
+    if (RT.viewTween) {
+      RT.viewTween.elapsed += dt;
+      const tw = RT.viewTween;
+      const k = clamp(tw.elapsed / tw.duration, 0, 1);
+      const e = 1 - Math.pow(1 - k, 3);
+      RT.camera.position.lerpVectors(tw.fromPos, tw.toPos, e);
+      RT.controls.target.lerpVectors(tw.fromTarget, tw.toTarget, e);
+      if (k >= 1) RT.viewTween = null;
+    }
+    if (RT.controls) {
       RT.controls.update();
+      clampViewTarget();
     }
 
     uiTimer -= dt;

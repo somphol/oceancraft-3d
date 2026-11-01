@@ -106,6 +106,24 @@
     </div>
   </header>
 
+  <!-- Mobile scene-camera dock ─────────────────────────────── -->
+  <div class="view-controls" id="view-controls" role="group" aria-label="Scene view controls">
+    <span class="view-controls__label">View</span>
+    <button class="view-btn" id="view-zoom-in" type="button" title="Zoom in" aria-label="Zoom in">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <button class="view-btn" id="view-zoom-out" type="button" title="Zoom out" aria-label="Zoom out">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <button class="view-btn" id="view-move" type="button" title="Move mode: drag to move the scene" aria-label="Toggle move mode" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </button>
+    <button class="view-btn" id="view-recenter" type="button" title="Recenter the boat" aria-label="Recenter the boat">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <span class="view-controls__hint">pinch<br>zoom</span>
+  </div>
+
   <!-- ── HUD ─────────────────────────────────────────────────── -->
   <main class="hud">
     <aside class="panel panel--sea" id="sea-panel">
@@ -151,7 +169,12 @@
     <aside class="panel panel--rig" id="rig-panel">
       <div class="panel__head">
         <span class="eyebrow">Fishing Rig</span>
-        <span class="status" id="rig-state"><i></i>Ready to cast</span>
+        <div class="rig-head-actions">
+          <span class="status" id="rig-state"><i></i>Ready to cast</span>
+          <button class="rig-collapse" id="btn-rig-toggle" type="button" aria-expanded="true" aria-controls="rig-panel" aria-label="Collapse fishing panel" title="Collapse fishing panel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="bite-banner" id="bite-banner">
@@ -315,6 +338,8 @@
         <div><b>Fish escapes</b><span>Slack line (below 14) for over two seconds.</span></div>
         <div><b>Surges</b><span>The fish pulls hard — release the reel until the red flash passes.</span></div>
         <div><b>Autosave</b><span>Progress is kept in this browser. Use Save / Load for device transfer.</span></div>
+        <div><b>Touch view</b><span>Pinch to zoom · one-finger orbit · two-finger pan · move pad for one-finger pan.</span></div>
+        <div><b>Small screens</b><span>Tap the chevron on the rig panel to collapse it and free the scene.</span></div>
       </div>
       <div class="help-keys">
         <span><kbd>Space</kbd> cast &amp; reel</span><span><kbd>C</kbd> cast</span><span><kbd>R</kbd> reel</span><span><kbd>L</kbd> logbook</span><span><kbd>M</kbd> mute</span><span><kbd>Esc</kbd> close</span>

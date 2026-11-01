@@ -105,6 +105,7 @@ All sound is synthesised with the Web Audio API:
 - Responsive HUD: live sea-state readouts, vessel card, sonar canvas, tension/progress/cast meters and a two-button cast/reel dock.
 - Full-screen logbook with Field Guide, Catches, Records & Badges, and Boat & Gear tabs.
 - Mobile layout at 390 × 844 with a two-row top bar, large touch controls and a scrollable logbook.
+- **Mobile scene camera:** pinch-to-zoom, two-finger pan, one-finger orbit, a dedicated view pad (zoom ±, move mode, recenter) and a collapsible rig panel so the boat is never trapped behind the UI.
 
 ## Controls
 
@@ -113,6 +114,10 @@ All sound is synthesised with the Web Audio API:
 | **Hold Cast** / `Space` / `C` | Charge cast; release to throw |
 | **Hold Reel** / `R` / `Space` (during a fight) | Reel in |
 | Drag scene / scroll | Orbit / zoom camera |
+| **Mobile: one-finger drag** | Orbit; switches to pan in move mode |
+| **Mobile: pinch / two-finger drag** | Zoom / pan the scene |
+| **View pad** (mobile) | Zoom in, zoom out, move mode, recenter |
+| **Rig chevron** (mobile) | Collapse or expand the fishing panel |
 | `L` | Open or close logbook |
 | `M` | Mute / unmute |
 | `?` or Help button | Controls & rules |
@@ -173,7 +178,7 @@ Imported files are validated and normalized; malformed or future-version logs ar
   - JSON export download (`oceancraft_save.json`) and real File import,
   - mute persistence across reload,
   - **0 uncaught exceptions** recorded by the app's built-in error capture (and no app-level console errors during the test run).
-- Screenshots: calm (`screenshot.png`), storm, night, gameplay, logbook, legendary catch, mobile HUD and mobile logbook.
+- Screenshots: calm (`screenshot.png`), storm, night, gameplay, logbook, legendary catch, mobile HUD, mobile collapsed-panel view and mobile logbook.
 
 ## Project structure
 
@@ -190,6 +195,7 @@ oceancraft-3d/
 ├── screenshot-logbook.png
 ├── screenshot-catch.png
 ├── screenshot-mobile.png
+├── screenshot-mobile-view.png
 ├── screenshot-mobile-logbook.png
 ├── README.md
 ├── LICENSE

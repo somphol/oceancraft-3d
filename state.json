@@ -57,7 +57,7 @@
     "save": "localStorage autosave + validated oceancraft_save.json export/import",
     "audio": "Web Audio API only: brown-noise ocean bed, reel clicks, splashes, bite, surge, snap, escape, thunder and catch chimes",
     "visuals": "procedural boat, lighthouse island, buoys, birds, clouds, sun/moon, 1,200 stars, bioluminescent plankton, rain and lightning",
-    "responsive": "desktop, tablet and 390 x 844 mobile layouts",
+    "responsive": "desktop, tablet and 390 x 844 mobile layouts; mobile view pad (zoom +/- , move mode, recenter), pinch/two-finger gestures and a collapsible rig panel",
     "controls": [
       "hold Cast / Space / C to charge; release to cast",
       "hold Reel / R / Space during a fight",
@@ -67,20 +67,20 @@
   },
   "files": {
     "index.html": {
-      "bytes": 18056,
-      "lines": 314
+      "bytes": 21921,
+      "lines": 356
     },
     "style.css": {
-      "bytes": 49613,
-      "lines": 746
+      "bytes": 52429,
+      "lines": 801
     },
     "script.js": {
-      "bytes": 163311,
-      "lines": 3602
+      "bytes": 168957,
+      "lines": 3748
     },
     "README.md": {
-      "bytes": 10830,
-      "lines": 207
+      "bytes": 12270,
+      "lines": 239
     },
     "favicon.svg": {
       "bytes": 1432,
@@ -105,7 +105,10 @@
       "bytes": 316744
     },
     "screenshot-mobile.png": {
-      "bytes": 984132
+      "bytes": 976074
+    },
+    "screenshot-mobile-view.png": {
+      "bytes": 1071753
     },
     "screenshot-mobile-logbook.png": {
       "bytes": 487471
@@ -135,7 +138,8 @@
       "JSON download and real File import",
       "mute persistence across reload",
       "mobile 390 x 844 HUD and logbook layouts",
-      "live GitHub Pages 200 with 18/18 self-tests"
+      "live GitHub Pages 200 with 18/18 self-tests",
+      "mobile pinch/two-finger zoom-pan, view pad and collapsible rig panel"
     ],
     "performance": {
       "viewport": "1600 x 1000",
@@ -152,6 +156,7 @@
       "screenshot-logbook.png",
       "screenshot-catch.png",
       "screenshot-mobile.png",
+      "screenshot-mobile-view.png",
       "screenshot-mobile-logbook.png"
     ]
   },
@@ -190,5 +195,10 @@
   "notes": [
     "No image, texture, 3D model or audio assets are used; boat, lighthouse, fish, particles, sky and soundscape are generated at runtime.",
     "The project directory follows the OceanCraft brief in this session. The existing cyberdoom-retro-fps project is a separate build."
-  ]
+  ],
+  "postBuild": {
+    "updatedAt": "2026-11-01T21:15:16Z",
+    "summary": "Mobile scene-camera controls: pinch-to-zoom, two-finger pan, one-finger orbit/move mode, dedicated view pad (zoom in/out, move, recenter), and a collapsible fishing panel. Mobile camera target raised so the boat sits above the info panel by default.",
+    "note": "Original build timing and token snapshot above are preserved. This incremental update is not included in those figures."
+  }
 }
