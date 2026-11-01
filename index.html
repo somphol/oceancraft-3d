@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071826">
+<meta name="description" content="OceanCraft 3D — a deep-sea fishing and hydrodynamics studio in your browser. Ride the swell, cast into the blue, and fill the aquarium logbook.">
+<title>OceanCraft 3D — Deep Sea Fishing &amp; Hydrodynamics Studio</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <canvas id="ocean-canvas" aria-label="Interactive 3D ocean with a fishing boat"></canvas>
+  <div class="scene-vignette" aria-hidden="true"></div>
+  <div class="scene-grain" aria-hidden="true"></div>
+
+  <!-- ── Loading ─────────────────────────────────────────────── -->
+  <div class="loading" id="loading">
+    <div class="loading__mark" aria-hidden="true">
+      <svg viewBox="0 0 120 90" fill="none">
+        <path d="M8 64c12-9 22-9 34 0s22 9 34 0 22-9 36 0" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M18 76c10-7 19-7 29 0s19 7 29 0 19-7 28 0" stroke="url(#lg)" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+        <path d="M42 44h36l-6 14H48l-6-14Z" fill="#0b2d44" stroke="#ffd166" stroke-width="2"/>
+        <path d="M44 44V22l16 14 16-14v22" stroke="#ffd166" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M44 30h32" stroke="#8fe6ff" stroke-width="1.5" opacity=".7"/>
+        <circle cx="88" cy="20" r="8" fill="#ffd166" opacity=".9"/>
+        <defs>
+          <linearGradient id="lg" x1="8" y1="64" x2="112" y2="64" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#49e2c4"/><stop offset=".55" stop-color="#8fe6ff"/><stop offset="1" stop-color="#ffd166"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <span class="eyebrow">Deep Sea Fishing &amp; Hydrodynamics Studio</span>
+    <h1>OCEAN<span>CRAFT</span> <em>3D</em></h1>
+    <p>Charting the bay, tuning the swell, waking the fish…</p>
+    <div class="loading__bar"><span id="loading-fill"></span></div>
+    <small id="loading-status">Preparing the harbour</small>
+  </div>
+
+  <!-- ── Top bar ─────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand__icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-opacity=".28"/>
+        <path d="M7 30c6-5 11-5 17 0s11 5 17 0" stroke="#49e2c4" stroke-width="2" stroke-linecap="round"/>
+        <path d="M15 21h18l-3 7H18l-3-7Z" fill="#0a2638" stroke="#ffd166" stroke-width="1.6"/>
+        <path d="M17 21v-8l7 6 7-6v8" stroke="#ffd166" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="37" cy="12" r="3.4" fill="#ffd166"/>
+      </svg>
+      <div class="brand__text">
+        <h1>OCEAN<span>CRAFT</span> <em>3D</em></h1>
+        <p>Deep Sea Fishing &amp; Hydrodynamics Studio</p>
+      </div>
+    </div>
+
+    <div class="weather-switcher" role="group" aria-label="Weather presets">
+      <button class="weather-btn is-active" data-weather="calm" aria-pressed="true">
+        <span class="weather-btn__icon">☀️</span>
+        <span class="weather-btn__copy"><b>Calm</b><small>Sunset</small></span>
+      </button>
+      <button class="weather-btn" data-weather="storm" aria-pressed="false">
+        <span class="weather-btn__icon">⛈️</span>
+        <span class="weather-btn__copy"><b>Storm</b><small>Waves</small></span>
+      </button>
+      <button class="weather-btn" data-weather="night" aria-pressed="false">
+        <span class="weather-btn__icon">🌙</span>
+        <span class="weather-btn__copy"><b>Night</b><small>Bioluminescent</small></span>
+      </button>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" id="btn-audio" aria-pressed="true" title="Toggle sound (M)" aria-label="Toggle sound">
+        <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-help" title="How to play (?)" aria-label="How to play">
+        <span aria-hidden="true" class="icon-q">?</span>
+      </button>
+      <button class="btn btn--logbook" id="btn-logbook" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v18H7.5A2.5 2.5 0 0 0 5 22V4.5Z" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M5 19.5A2.5 2.5 0 0 1 7.5 17H20M9 6h7M9 9.5h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span>Logbook</span>
+        <span class="badge" id="logbook-badge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── HUD ─────────────────────────────────────────────────── -->
+  <main class="hud">
+    <aside class="panel panel--sea" id="sea-panel">
+      <div class="panel__head">
+        <span class="eyebrow">Sea State</span>
+        <span class="pill pill--calm" id="sea-badge">Calm</span>
+      </div>
+      <h2 id="weather-name">Calm Sunset</h2>
+      <p class="weather-desc" id="weather-desc">A copper sun, a lazy swell, and fish rising in the golden hour.</p>
+
+      <div class="readouts">
+        <div class="readout"><span>Wave height</span><strong id="read-wave">0.0 m</strong></div>
+        <div class="readout"><span>Wind</span><strong id="read-wind">0 kn</strong></div>
+        <div class="readout"><span>Water</span><strong id="read-temp">0 °C</strong></div>
+        <div class="readout"><span>Bite rate</span><strong id="read-bite">—</strong></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="boat-profile">
+        <div class="boat-avatar" aria-hidden="true">⛵</div>
+        <div class="boat-copy">
+          <span class="eyebrow">Your vessel</span>
+          <h3>S.S. Wanderer</h3>
+          <div class="xp-track"><span id="xp-fill"></span></div>
+          <small id="level-label">Deckhand · Level 1</small>
+        </div>
+        <div class="coins" title="Catch coins">
+          <span aria-hidden="true">🪙</span>
+          <strong id="coin-count">0</strong>
+        </div>
+      </div>
+
+      <div class="sonar-card">
+        <div class="panel__head">
+          <span class="eyebrow">Sonar</span>
+          <span class="sonar-note" id="sonar-note">Scanning the shelf</span>
+        </div>
+        <canvas id="sonar" width="320" height="176" aria-label="Sonar display"></canvas>
+      </div>
+    </aside>
+
+    <aside class="panel panel--rig" id="rig-panel">
+      <div class="panel__head">
+        <span class="eyebrow">Fishing Rig</span>
+        <span class="status" id="rig-state"><i></i>Ready to cast</span>
+      </div>
+
+      <div class="bite-banner" id="bite-banner">
+        <span class="bite-banner__icon" aria-hidden="true">❗</span>
+        <div><b>FISH ON</b><small>Hold REEL — keep the needle in the green</small></div>
+      </div>
+
+      <div class="tension-wrap">
+        <div class="tension-head"><span>Line tension</span><strong id="tension-readout">—</strong></div>
+        <div class="tension-track" id="tension-track" role="meter" aria-label="Line tension" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="tension-zone" id="tension-zone"></div>
+          <div class="tension-fill" id="tension-fill"></div>
+          <div class="tension-needle" id="tension-needle"><span></span></div>
+          <div class="tension-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="tension-scale"><span>Slack</span><span>Safe zone</span><span>Snap</span></div>
+      </div>
+
+      <div class="fight-stats">
+        <div class="fight-stats__head"><span>Reel progress</span><strong id="progress-readout">0%</strong></div>
+        <div class="progress-track"><span id="progress-fill"></span></div>
+        <div class="fight-meta"><span id="fish-hint">No fish hooked</span><span id="fight-time">—</span></div>
+      </div>
+
+      <div class="charge-wrap">
+        <div class="charge-head"><span>Cast power</span><strong id="charge-readout">0%</strong></div>
+        <div class="charge-track"><span id="charge-fill"></span></div>
+      </div>
+
+      <div class="control-row">
+        <button class="btn btn--cast" id="btn-cast" aria-label="Cast line — hold to charge, release to cast">
+          <span class="btn__icon" aria-hidden="true">🎣</span>
+          <span class="btn__copy"><b>Cast</b><small>Hold to charge</small></span>
+        </button>
+        <button class="btn btn--reel" id="btn-reel" disabled aria-label="Reel in — hold to pull">
+          <span class="btn__icon btn__icon--spin" aria-hidden="true">⟳</span>
+          <span class="btn__copy"><b>Reel</b><small>Hold · Space</small></span>
+        </button>
+      </div>
+
+      <p class="control-hint" id="control-hint">Hold <kbd>Space</kbd> to charge, release to cast. Drag the scene to orbit.</p>
+
+      <div class="rig-actions">
+        <button class="text-btn" id="btn-save">💾 Save log</button>
+        <button class="text-btn" id="btn-load">📂 Load</button>
+        <input type="file" id="file-input" accept="application/json,.json" hidden>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer-bar">
+    <div class="footer-left"><span class="live-dot" aria-hidden="true"></span><span id="footer-status">Waters calm · Bite rate steady</span></div>
+    <div class="ticker">
+      <span class="eyebrow">Latest catch</span>
+      <strong id="last-catch">No catches yet — cast a line.</strong>
+    </div>
+    <div class="footer-right">
+      <span><kbd>Space</kbd> cast / reel</span>
+      <span><kbd>L</kbd> logbook</span>
+      <span><kbd>M</kbd> mute</span>
+    </div>
+  </footer>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div class="weather-flash" id="weather-flash" aria-hidden="true"></div>
+
+  <!-- ── Catch reveal ────────────────────────────────────────── -->
+  <div class="modal" id="catch-modal" hidden>
+    <div class="modal__backdrop" data-close="catch"></div>
+    <div class="modal__card catch-card" role="dialog" aria-modal="true" aria-labelledby="catch-title">
+      <button class="modal__close" data-close="catch" aria-label="Close catch card">×</button>
+      <div class="catch-card__glow" aria-hidden="true"></div>
+      <span class="rarity-badge" id="catch-rarity">Rare</span>
+      <div class="catch-art" id="catch-art" aria-hidden="true"></div>
+      <span class="eyebrow" id="catch-eyebrow">New species logged</span>
+      <h2 id="catch-title">Sapphire Tuna</h2>
+      <p class="catch-sub" id="catch-sub">A deep-water prize with a sapphire back.</p>
+      <div class="catch-stats">
+        <div><span>Weight</span><strong id="catch-weight">—</strong></div>
+        <div><span>Length</span><strong id="catch-length">—</strong></div>
+        <div><span>Reward</span><strong id="catch-reward">—</strong></div>
+      </div>
+      <div class="catch-extra" id="catch-extra"></div>
+      <div class="catch-actions">
+        <button class="btn btn--gold" data-close="catch">Keep fishing</button>
+        <button class="btn btn--ghost" id="btn-catch-log">View logbook</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Logbook ─────────────────────────────────────────────── -->
+  <div class="modal" id="logbook-modal" hidden>
+    <div class="modal__backdrop" data-close="logbook"></div>
+    <div class="modal__card logbook-card" role="dialog" aria-modal="true" aria-labelledby="logbook-title">
+      <header class="logbook-head">
+        <div>
+          <span class="eyebrow">Captain's archive</span>
+          <h2 id="logbook-title">Aquarium Logbook</h2>
+          <p class="logbook-sub" id="logbook-sub">0 of 18 species documented</p>
+        </div>
+        <div class="collection-ring" id="collection-ring"><span id="collection-pct">0%</span></div>
+        <button class="modal__close" data-close="logbook" aria-label="Close logbook">×</button>
+      </header>
+
+      <nav class="logbook-tabs" role="tablist" aria-label="Logbook sections">
+        <button class="tab is-active" data-tab="guide" role="tab" aria-selected="true">Field guide</button>
+        <button class="tab" data-tab="catches" role="tab" aria-selected="false">Catches <span id="tab-catch-count">0</span></button>
+        <button class="tab" data-tab="records" role="tab" aria-selected="false">Records &amp; badges</button>
+        <button class="tab" data-tab="gear" role="tab" aria-selected="false">Boat &amp; gear</button>
+      </nav>
+
+      <div class="logbook-body">
+        <section class="tab-panel is-active" data-panel="guide" role="tabpanel">
+          <div class="guide-grid" id="guide-grid"></div>
+        </section>
+        <section class="tab-panel" data-panel="catches" role="tabpanel">
+          <div class="catches-list" id="catches-list"></div>
+        </section>
+        <section class="tab-panel" data-panel="records" role="tabpanel">
+          <div class="records-hero" id="records-hero"></div>
+          <div class="records-grid" id="records-grid"></div>
+          <h3 class="section-title">Trophy badges</h3>
+          <div class="achievements-grid" id="achievements-grid"></div>
+          <div class="danger-zone">
+            <div><b>Reset the voyage</b><span>Erases every catch, coin and upgrade on this device.</span></div>
+            <button class="btn btn--danger" id="btn-reset">Reset progress</button>
+          </div>
+        </section>
+        <section class="tab-panel" data-panel="gear" role="tabpanel">
+          <div class="gear-intro">
+            <div><span class="eyebrow">Wanderer workshop</span><h3>Upgrade the rig</h3><p>Spend catch coins on permanent improvements. Every level is saved in your local log.</p></div>
+            <div class="gear-wallet"><span>🪙</span><strong id="gear-coins">0</strong><small>available</small></div>
+          </div>
+          <div class="gear-grid" id="gear-list"></div>
+        </section>
+      </div>
+
+      <footer class="logbook-foot">
+        <button class="btn btn--small btn--gold" id="btn-save-2">💾 Save Aquarium Log</button>
+        <button class="btn btn--small btn--ghost" id="btn-load-2">📂 Load Save File</button>
+        <span class="save-state" id="save-state"><i></i>Autosaved locally</span>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ── Help ────────────────────────────────────────────────── -->
+  <div class="modal" id="help-modal" hidden>
+    <div class="modal__backdrop" data-close="help"></div>
+    <div class="modal__card help-card" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <button class="modal__close" data-close="help" aria-label="Close help">×</button>
+      <span class="eyebrow">Crew briefing</span>
+      <h2 id="help-title">How to fish the deep</h2>
+      <div class="help-grid">
+        <div class="help-step"><span>01</span><h3>Cast</h3><p>Hold <kbd>Cast</kbd> or <kbd>Space</kbd> to build power. Release to throw the bobber. More power reaches deeper, rarer water.</p></div>
+        <div class="help-step"><span>02</span><h3>Wait</h3><p>Watch the bobber and sonar. A splash and a chime mean a fish has taken the lure. The bite window is short.</p></div>
+        <div class="help-step"><span>03</span><h3>Fight</h3><p>Hold <kbd>Reel</kbd> or <kbd>Space</kbd> to pull. Keep the needle in the green safe zone. Ease off when a surge hits.</p></div>
+        <div class="help-step"><span>04</span><h3>Log it</h3><p>Land 18 species across three rarities. Spend coins on gear, chase legendary catches, and save your log as JSON.</p></div>
+      </div>
+      <div class="help-notes">
+        <div><b>Line snaps</b><span>Tension above 100.</span></div>
+        <div><b>Fish escapes</b><span>Slack line (below 14) for over two seconds.</span></div>
+        <div><b>Surges</b><span>The fish pulls hard — release the reel until the red flash passes.</span></div>
+        <div><b>Autosave</b><span>Progress is kept in this browser. Use Save / Load for device transfer.</span></div>
+      </div>
+      <div class="help-keys">
+        <span><kbd>Space</kbd> cast &amp; reel</span><span><kbd>C</kbd> cast</span><span><kbd>R</kbd> reel</span><span><kbd>L</kbd> logbook</span><span><kbd>M</kbd> mute</span><span><kbd>Esc</kbd> close</span>
+      </div>
+      <p class="build-credit">Built with <b>OpenCode</b> · <b>DeepSeek V4.1 Flash</b> · Three.js r128 · procedural art &amp; audio</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
