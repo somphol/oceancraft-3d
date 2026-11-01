@@ -4,8 +4,8 @@
 | --- | --- |
 | Project | **OCEANCRAFT 3D — Deep Sea Fishing & Hydrodynamics Studio** (`oceancraft-3d`) |
 | Started | 2026-11-01 05:45:11 UTC |
-| Packaged | 2026-11-01 06:38:31 UTC |
-| Duration | **53m 20s** (3,200 seconds) |
+| Packaged | 2026-11-01 06:39:52 UTC |
+| Duration | **54m 41s** (3,281 seconds) |
 | Harness | OpenCode 2.2.5 |
 | Model | DeepSeek V4.1 Flash (`opencode-go/deepseek-v4.1-flash`) |
 | Session | `ses_e6a5c0fe4ffezOp3UOe393igmV` |
@@ -16,15 +16,15 @@
 
 | Metric | Tokens |
 | --- | ---: |
-| Input | 404,520 |
-| Output | 140,029 |
-| Reasoning | 145,206 |
-| **Total (input + output + reasoning)** | **689,755** |
-| Cache read | 58,931,456 |
+| Input | 412,283 |
+| Output | 144,477 |
+| Reasoning | 146,772 |
+| **Total (input + output + reasoning)** | **703,532** |
+| Cache read | 60,907,776 |
 | Cache write | 1,178 |
-| Total including cache | 59,622,389 |
+| Total including cache | 61,612,486 |
 
-> Snapshot taken from the OpenCode session record when the project was packaged at 2026-11-01 06:38:31 UTC. The final state commit, GitHub push and Pages verification happen outside this snapshot, so the live session totals are marginally higher. Total cost reported by the session: **$0.00**.
+> Snapshot taken from the OpenCode session record when the project was packaged at 2026-11-01 06:39:52 UTC. The final state commit, GitHub push and Pages rebuild happen immediately after this snapshot, so the live session totals are marginally higher. Total cost reported by the session: **$0.00**.
 
 ## What was built
 

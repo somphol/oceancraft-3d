@@ -4,20 +4,20 @@
   "description": "A complete, production-ready, 100% client-side 3D fishing game and hydrodynamics playground built with vanilla HTML5, CSS3, ES6 and Three.js r128. Dynamic wave field, sampled boat buoyancy, cast-and-reel tension minigame, 18-species aquarium logbook, gear upgrades, Web Audio soundscape, localStorage autosave and JSON save transfer.",
   "build": {
     "startedAt": "2026-11-01T05:45:11Z",
-    "completedAt": "2026-11-01T06:38:31Z",
-    "durationSeconds": 3200,
-    "durationHuman": "53m 20s",
+    "completedAt": "2026-11-01T06:39:52Z",
+    "durationSeconds": 3281,
+    "durationHuman": "54m 41s",
     "timezone": "UTC",
     "note": "Start is the OpenCode session creation time; completion is the build-state snapshot. The final state commit, GitHub push and Pages verification happen immediately after this snapshot."
   },
   "tokens": {
-    "input": 404520,
-    "output": 140029,
-    "reasoning": 145206,
-    "cacheRead": 58931456,
+    "input": 412283,
+    "output": 144477,
+    "reasoning": 146772,
+    "cacheRead": 60907776,
     "cacheWrite": 1178,
-    "total": 689755,
-    "totalWithCache": 59622389,
+    "total": 703532,
+    "totalWithCache": 61612486,
     "note": "Snapshot from the OpenCode session record at packaging time. total = input + output + reasoning. Cache reads/writes are context-usage figures listed separately. Final commit/push verification happens after this snapshot, so live session totals are marginally higher."
   },
   "cost": {
