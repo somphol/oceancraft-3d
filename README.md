@@ -1,15 +1,21 @@
+<div align="center">
+
+<img src="docs/social-card.png" alt="OCEANCRAFT 3D — Deep Sea Fishing & Hydrodynamics Studio" width="100%" />
+
 # OCEANCRAFT 3D
 
-**Deep Sea Fishing & Hydrodynamics Studio** — a complete, production-ready, 100% client-side fishing game built with vanilla HTML5, CSS3, ES6 and Three.js r128.
+**Deep Sea Fishing & Hydrodynamics Studio**
 
-[![Live demo](https://img.shields.io/badge/LIVE_DEMO-somphol.github.io%2Foceancraft--3d-49e2c4?style=for-the-badge&labelColor=071826)](https://somphol.github.io/oceancraft-3d/)
-[![No backend](https://img.shields.io/badge/BACKEND-none-8fe6ff?style=for-the-badge&labelColor=071826)](#)
-[![Three.js](https://img.shields.io/badge/THREE.JS-r128-ffd166?style=for-the-badge&labelColor=071826)](#)
-[![Self-tests](https://img.shields.io/badge/SELF--TESTS-18%2F18-6ff2b3?style=for-the-badge&labelColor=071826)](#verification)
+An animated ocean, a physically floating boat, and a complete cast → bite → fight → catch → logbook loop.
 
-> A copper sun, a lazy swell, and eighteen species waiting under the hull. **Cast into the blue.**
+[![Live demo](https://img.shields.io/badge/live_demo-online-49e2c4?style=flat-square)](https://somphol.github.io/oceancraft-3d/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-49e2c4?style=flat-square)](LICENSE)
 
-![OceanCraft 3D — calm sunset](screenshot.png)
+**[Try it live →](https://somphol.github.io/oceancraft-3d/)**
+
+</div>
+
+---
 
 ## Overview
 
@@ -17,9 +23,7 @@ OceanCraft 3D is a self-contained 3D fishing game and boat-physics toy. It rende
 
 Everything runs in the browser. There is no build step, server, database, API key or external art/audio pipeline. The water, boat, lighthouse, fish illustrations, sky, particles and soundscape are generated at runtime. Progress is saved to `localStorage` and can be exported to `oceancraft_save.json` and imported on another device.
 
-## Live demo
-
-<https://somphol.github.io/oceancraft-3d/>
+## Run locally
 
 If GitHub Pages is still warming up, serve the folder locally:
 
