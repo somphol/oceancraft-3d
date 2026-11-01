@@ -14,3 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A 1200 × 630 social preview card and Open Graph / Twitter metadata for link previews.
 - README refresh with a consistent header, badges, and documentation index.
 - `robots.txt` and `sitemap.xml` for the GitHub Pages site.
+- Mobile scene-camera controls: pinch zoom, two-finger pan, one-finger orbit,
+  a view pad (zoom ±, move mode, recenter), raised mobile boat framing and a
+  collapsible fishing rig panel.
